@@ -31,7 +31,7 @@ git_init(){
 
 license_init(){
     stepper "Download file: LICENSE (GPLv3)"
-    wget http://www.gnu.org/licenses/gpl-3.0.txt -O "$PROJECT_NAME/LICENSE"
+    wget http://www.gnu.org/licenses/gpl-3.0.txt -O "$PROJECT_NAME/LICENSE" 2> /dev/null
 
 }
 
@@ -49,8 +49,10 @@ readme_init(){
     stepper "Creating README.md"
     touch "$PROJECT_NAME/README.md"
 }
-clangd_init(){
-    stepper "Initializing clangd settings"
+clang_init(){
+    stepper "Initializing clang settings"
+    echo $CLANG > "$PROJECT_NAME/.clang-format"
+
 }
 
 TASKS="
@@ -60,7 +62,7 @@ readme_init
 license_init
 main_init
 makefile_init
-clangd_init
+clang_init
 "
 
 TOTAL=7
@@ -84,12 +86,12 @@ MAIN_C='
 #include <stdlib.h>
 #include <stdio.h>
 
-int main(int argc, char **argv) {
-  printf("Hola mundo!\n");
+int main(int argc, char **argv) 
+{
+  printf("Hello world!\\n");
 
   return 0;
 }
-
 '
 
 MAKEFILE='
@@ -105,6 +107,71 @@ main: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 '
 
+CLANG='
+# SPDX-License-Identifier: GPL-2.0
+#
+# clang-format configuration file. Intended for clang-format >= 4.
+#
+# For more information, see:
+#
+#   Documentation/process/clang-format.rst
+#   https://clang.llvm.org/docs/ClangFormat.html
+#   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+#
+---
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+#AlignEscapedNewlines: Left # Unknown to clang-format-4.0
+AlignOperands: true
+AlignTrailingComments: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: false
+BinPackArguments: true
+BinPackParameters: true
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: true
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  #AfterExternBlock: false # Unknown to clang-format-5.0
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  #SplitEmptyFunction: true # Unknown to clang-format-4.0
+  #SplitEmptyRecord: true # Unknown to clang-format-4.0
+  #SplitEmptyNamespace: true # Unknown to clang-format-4.0
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
+#BreakBeforeInheritanceComma: false # Unknown to clang-format-4.0
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializersBeforeComma: false
+#BreakConstructorInitializers: BeforeComma # Unknown to clang-format-4.0
+BreakStringLiterals: false
+ColumnLimit: 80
+#CompactNamespaces: false # Unknown to clang-format-4.0
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 8
+ContinuationIndentWidth: 8
+Cpp11BracedListStyle: false
+DerivePointerAlignment: false
+DisableFormat: false
+ExperimentalAutoDetectBinPacking: false
+#FixNamespaceComments: false # Unknown to clang-format-4.0
+'
 
 for task in $TASKS
 do
