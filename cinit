@@ -12,6 +12,7 @@ print_err(){
     RED='\033[0;31m'
     NO_COLOR='\033[0m'
     printf "${RED} Error: ${NO_COLOR}$1\n"
+    exit -1
 }
 
 counter(){
@@ -20,7 +21,7 @@ counter(){
 
 dirs_init(){
     stepper "Creating directory $PROJECT_NAME"
-    mkdir $PROJECT_NAME || print_err "Failed at creating dir" && return -1
+    mkdir $PROJECT_NAME || print_err "Failed at creating dir" 
 }
 
 git_init(){
@@ -68,7 +69,7 @@ clang_init
 TOTAL=7
 INDEX=1
 
-[[ $# -lt 1 ]] && print_err "Project name required" && return -1
+[[ $# -lt 1 ]] && print_err "Project name required"
 
 PROJECT_NAME=$1
 
