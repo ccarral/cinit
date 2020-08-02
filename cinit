@@ -1,30 +1,91 @@
-#!/bin/zsh
+#!/bin/bash
 
-print_info(){
+stepper(){
     PURPLE='\033[0;35m'
+    CYAN='\033[0;36m'
     NO_COLOR='\033[0m'
-    printf "${PURPLE}$1${NO_COLOR}\n"
-
+    printf "${CYAN}  [${PURPLE}${INDEX}/${TOTAL}${CYAN}]  $1${NO_COLOR}\n"
+    INDEX=$(($INDEX+1))
 }
 
 print_err(){
     RED='\033[0;31m'
     NO_COLOR='\033[0m'
-    printf "${RED} ERROR: ${NO_COLOR}$1\n"
+    printf "${RED} Error: ${NO_COLOR}$1\n"
 }
+
+counter(){
+    printf "$#"
+}
+
+dirs_init(){
+    stepper "Creating directory $PROJECT_NAME"
+    mkdir $PROJECT_NAME || print_err "Failed at creating dir" && return -1
+}
+
+git_init(){
+    stepper "Initializing git repository"
+    git init "$PROJECT_NAME" > /dev/null
+    echo $GITIGNORE > "$PROJECT_NAME/.gitignore"
+}
+
+license_init(){
+    stepper "Download file: LICENSE (GPLv3)"
+    wget http://www.gnu.org/licenses/gpl-3.0.txt -O "$PROJECT_NAME/LICENSE"
+
+}
+
+main_init(){
+    stepper "Creating main.c file"
+    echo $MAIN_C > "$PROJECT_NAME/main.c"
+}
+
+makefile_init(){
+    stepper "Creating MAKEFILE"
+    echo $MAKEFILE > "$PROJECT_NAME/makefile"
+}
+
+readme_init(){
+    stepper "Creating README.md"
+    touch "$PROJECT_NAME/README.md"
+}
+clangd_init(){
+    stepper "Initializing clangd settings"
+}
+
+TASKS="
+dirs_init
+git_init
+readme_init
+license_init
+main_init
+makefile_init
+clangd_init
+"
+
+TOTAL=7
+INDEX=1
+
 [[ $# -lt 1 ]] && print_err "Project name required" && return -1
 
-PROYECT_NAME=$1
+PROJECT_NAME=$1
 
-print_info "Create directory $PROYECT_NAME"
-mkdir $PROYECT_NAME && cd $PROYECT_NAME || print_err "Failed at creating dir"
+
+GITIGNORE='
+# Files
+*.o
+
+# Editor Files
+*.swp
+'
+
 
 MAIN_C='
 #include <stdlib.h>
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-  printf("Hola, mundo\n");
+  printf("Hola mundo!\n");
 
   return 0;
 }
@@ -44,5 +105,9 @@ main: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 '
 
-echo $MAIN_C > "main.c"
-echo $MAKEFILE > "makefile"
+
+for task in $TASKS
+do
+    eval $task 
+done
+
