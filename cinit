@@ -1,0 +1,48 @@
+#!/bin/zsh
+
+print_info(){
+    PURPLE='\033[0;35m'
+    NO_COLOR='\033[0m'
+    printf "${PURPLE}$1${NO_COLOR}\n"
+
+}
+
+print_err(){
+    RED='\033[0;31m'
+    NO_COLOR='\033[0m'
+    printf "${RED} ERROR: ${NO_COLOR}$1\n"
+}
+[[ $# -lt 1 ]] && print_err "Project name required" && return -1
+
+PROYECT_NAME=$1
+
+print_info "Create directory $PROYECT_NAME"
+mkdir $PROYECT_NAME && cd $PROYECT_NAME || print_err "Failed at creating dir"
+
+MAIN_C='
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(int argc, char **argv) {
+  printf("Hola, mundo\n");
+
+  return 0;
+}
+
+'
+
+MAKEFILE='
+CC=gcc
+CFLAGS=-I.
+# DEPS=%.h
+OBJ = *.o
+
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+main: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS)
+'
+
+echo $MAIN_C > "main.c"
+echo $MAKEFILE > "makefile"
