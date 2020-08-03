@@ -4,7 +4,7 @@ stepper(){
     PURPLE='\033[0;35m'
     CYAN='\033[0;36m'
     NO_COLOR='\033[0m'
-    printf "${CYAN}  [${PURPLE}${INDEX}/${TOTAL}${CYAN}]  $1${NO_COLOR}\n"
+    printf "${CYAN}  [${PURPLE}${INDEX}${CYAN}/${PURPLE}${TOTAL}${CYAN}]  $1${NO_COLOR}\n"
     INDEX=$(($INDEX+1))
 }
 
@@ -22,6 +22,11 @@ counter(){
 dirs_init(){
     stepper "Creating directory $PROJECT_NAME"
     mkdir $PROJECT_NAME || print_err "Failed at creating dir" 
+
+    if [ $FULL = yes ]; then
+        mkdir "$PROJECT_NAME/include"
+        mkdir "$PROJECT_NAME/tests"
+    fi
 }
 
 git_init(){
@@ -56,23 +61,59 @@ clang_init(){
 
 }
 
+GIT=yes
+FULL=no
+
 TASKS="
 dirs_init
-git_init
 readme_init
-license_init
 main_init
 makefile_init
 clang_init
 "
 
-TOTAL=7
+TOTAL=5
 INDEX=1
 
-[[ $# -lt 1 ]] && print_err "Project name required"
 
-PROJECT_NAME=$1
+PROJ_NAME_PARSED=no;
 
+for i in "$@"
+    do
+    case $i in
+        --no-git)
+        GIT=no
+        ;;
+
+        --full)
+        FULL=yes
+        ;;
+
+        *)
+        if [ $PROJ_NAME_PARSED = no ]; then
+            PROJECT_NAME="$i"
+            PROJ_NAME_PARSED=yes
+        else
+            print_err "Unrecognized option: $i"
+        fi
+    esac
+done
+
+if [ $PROJ_NAME_PARSED = no ]; then
+    print_err "No project name provided"
+fi
+
+if [ $GIT = yes ]; then
+    TASKS+="git_init
+    "
+    TOTAL=$(($TOTAL+1))
+fi
+
+if [ $FULL = yes ]; then 
+    TASKS+="license_init
+    "
+    TOTAL=$(($TOTAL+1))
+fi
 
 GITIGNORE='
 # Files

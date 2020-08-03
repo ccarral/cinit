@@ -3,7 +3,7 @@
 Simple CLI cargo-like initializer for a C project
 
 ```shell
-$ cinit <project-name> [ --full ]
+$ cinit <project-name> [ --full | --no-git ]
 ```
 
 ## Installation
