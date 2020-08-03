@@ -9,5 +9,7 @@ $ cinit <project-name> [ --full ]
 ## Installation
 
 ```shell
-$ wget https://raw.githubusercontent.com/ccarral/cinit/master/cinit -O /usr/local/bin/cinit
+$ git clone git@github.com:ccarral/cinit.git
+$ cd cinit
+$ sudo cp cinit /usr/local/bin/cinit
 ```
