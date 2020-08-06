@@ -32,7 +32,7 @@ dirs_init(){
 git_init(){
     stepper "Initializing git repository"
     git init "$PROJECT_NAME" > /dev/null
-    echo $GITIGNORE > "$PROJECT_NAME/.gitignore"
+    echo_file "$GITIGNORE" > "$PROJECT_NAME/.gitignore"
 }
 
 license_init(){
@@ -43,12 +43,12 @@ license_init(){
 
 main_init(){
     stepper "Creating main.c file"
-    echo $MAIN_C > "$PROJECT_NAME/main.c"
+    echo_file "$MAIN_C" > "$PROJECT_NAME/main.c"
 }
 
 makefile_init(){
     stepper "Creating MAKEFILE"
-    echo $MAKEFILE > "$PROJECT_NAME/makefile"
+    echo_file "$MAKEFILE" > "$PROJECT_NAME/makefile"
 }
 
 readme_init(){
@@ -57,8 +57,12 @@ readme_init(){
 }
 clang_init(){
     stepper "Initializing clang settings"
-    echo $CLANG > "$PROJECT_NAME/.clang-format"
+    echo_file "$CLANG" > "$PROJECT_NAME/.clang-format"
 
+}
+
+echo_file(){
+    echo "$1"
 }
 
 GIT=yes
@@ -130,7 +134,7 @@ MAIN_C='
 
 int main(int argc, char **argv) 
 {
-  printf("Hello world!\\n");
+  printf("Hello world!");
 
   return 0;
 }
